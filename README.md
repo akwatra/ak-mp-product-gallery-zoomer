@@ -48,6 +48,12 @@ Implemented default pre setting on the basis of most common practice in all popu
 3. Create product in marketpress and add wordpress Gallery with wordpress Add Media button,
 this will be converted auto into product gallery zoomer.
 
+== Video ==
+
+[vimeo http://vimeo.com/105286153]
+
+[vimeo http://vimeo.com/104951416]
+
 
 == Frequently Asked Questions ==
 
