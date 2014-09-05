@@ -9,7 +9,7 @@ class AK_MPPG {
 	
 	const plugin_name = 'MarketPress Product Gallery Zoomer';
 	const min_php_version = '5.2';
-	const min_wp_version = '3.8';
+	const min_wp_version = '3.6';
 	const min_mp_version = '2.9.5';
 	const plugin = 'ak-mp-product-gallery-zoomer/index.php';
 	const version = '1.0.0';

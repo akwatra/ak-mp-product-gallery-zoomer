@@ -2,8 +2,8 @@
 Contributors: akwatra
 Donate link: https://github.com/akwatra/ak-marketpress-product-gallery/
 Tags: MarketPress e-commerce, Resonsive product gallery, Resonsive product zoom, multi images gallery, wpmu , Resonsive
-Requires at least: 3.8.0
-Tested up to: 3.9.2
+Requires at least: 3.6
+Tested up to: 4.0
 Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
