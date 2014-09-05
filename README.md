@@ -3,6 +3,11 @@
 
 Product Gallery with Zoom for WPMU MarketPress e-commerce plugin, wordpress default Create Gallery feature to add product gallery.
 
+== Support ==
+Please motivate and support by Donation at paypal id: akpayment@gmail.com
+
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3RLAJCS6Q5T7J
+
 == Description ==
 
 After membership, When i found there not any feature in wpmu marketpress for product gallery,
@@ -129,3 +134,7 @@ email: ajaykwatra@gmail.com
 == Donate Support ==
 
 Please motivate and support by Donation at paypal id: akpayment@gmail.com
+
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3RLAJCS6Q5T7J
+
+
