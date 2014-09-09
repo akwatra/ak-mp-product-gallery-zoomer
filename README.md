@@ -33,7 +33,7 @@ Implemented default pre setting on the basis of most common practice in all popu
 *   Create Product Gallery with Zoom effect
 *   Its using the wordpress default Add Media -> Create Gallery to add product gallery
 *   Zero Learning Curve ,as this is using wordpress default Add Gallery native feature. 
-*   with align:left and right option in gaRequires at least: 3.8.0llery shortcode attribute. [gallery align="right" ids="124,123,121,122,120"] "align=left" by default 
+*   with align:left and right option in gallery shortcode attribute. [gallery align="right" ids="124,123,121,122,120"] "align=left" by default 
 *   This will not effect your any another post , page or plugin gallery.
 * 	Also verifying the min wordpress and marketpress versions.
 *	Multisite working. Do Network Activate for that.
@@ -59,7 +59,7 @@ this will be converted auto into product gallery zoomer.
 
 = Not able to install version error =
 
-When i developed i had only marketpress version 2.9.5 and wordpress 3.8.x
+When i developed i had only marketpress version 2.9.5 and wordpress 3.6.x
 so you should update to that versions. 
 or send me lower version of marketpress and i will try to make that compatible. 
 I am asking charges , but you have to donate any amount you feel comfortable 
@@ -134,7 +134,7 @@ email: ajaykwatra@gmail.com
 == Upgrade Notice ==
 
 * Install updated version
-* Requires at least: 3.8.0 Wordpress
+* Requires at least: 3.6.0 Wordpress
 * Requires at least: 2.9.5 wpmu Marketpress
 
 == Donate Support ==
